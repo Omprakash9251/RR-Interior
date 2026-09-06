@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { COMPANY, PROJECT_TYPES, TEAM, formatPhone } from '../data/content';
+import { COMPANY, FORMS, PROJECT_TYPES, TEAM, formatPhone } from '../data/content';
+import { useFormSubmit } from '../hooks/useFormSubmit';
 import { useReveal } from '../hooks/useReveal';
 import { Doc, Mail, Phone, Pin, Send } from './Icons';
 import MapPanel from './MapPanel';
@@ -8,7 +9,10 @@ export default function Contact() {
   const [form, setForm] = useState({
     name: '', email: '', phone: '', type: '', location: '', message: '',
   });
-  const [sent, setSent] = useState(false);
+  const [invalid, setInvalid] = useState('');
+  const { status, error, send } = useFormSubmit();
+  const sent = status === 'sent';
+  const sending = status === 'sending';
 
   const [rh, ch, sh] = useReveal();
   const [ri, ci, si] = useReveal(60);
@@ -17,10 +21,31 @@ export default function Contact() {
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
   const submit = () => {
-    // Wire this to your backend or email service.
-    console.log('Contact form submitted:', form);
-    setSent(true);
+    // A name plus one way to reach them back is the minimum a lead is worth.
+    if (!form.name.trim()) return setInvalid('Please add your name.');
+    if (!form.phone.trim() && !form.email.trim()) {
+      return setInvalid('Please add a phone number or an email address.');
+    }
+    setInvalid('');
+
+    send(
+      {
+        Name: form.name,
+        Email: form.email || '—',
+        Phone: form.phone || '—',
+        'Project type': form.type || '—',
+        'Site location': form.location || '—',
+        Message: form.message || '—',
+      },
+      { subject: FORMS.contactSubject, replyTo: form.email || undefined },
+    );
   };
+
+  const label = sending
+    ? 'Sending…'
+    : sent
+      ? 'Message sent — we will reply today'
+      : null;
 
   return (
     <section className="contact" id="contact">
@@ -79,10 +104,30 @@ export default function Contact() {
               <textarea placeholder="Approximate area, scope of work, and when you need it completed…"
                         value={form.message} onChange={set('message')} />
             </label>
-            <button className="submit" type="button" onClick={submit} disabled={sent}
-                    style={sent ? { opacity: 0.72 } : undefined}>
-              {sent ? 'Message sent — we will reply today' : <>Send Message <Send /></>}
+            <button className="submit" type="button" onClick={submit}
+                    disabled={sending || sent}
+                    style={sent || sending ? { opacity: 0.72 } : undefined}>
+              {label || <>Send Message <Send /></>}
             </button>
+
+            {invalid && <p className="fmsg bad" role="alert">{invalid}</p>}
+
+            {status === 'error' && (
+              <p className="fmsg bad" role="alert">
+                {error} Nothing was sent — please call{' '}
+                <a href={`tel:+91${COMPANY.primaryPhone}`}>
+                  {formatPhone(COMPANY.primaryPhone)}
+                </a>{' '}
+                or email{' '}
+                <a href={`mailto:${COMPANY.email}`}>{COMPANY.email}</a>.
+              </p>
+            )}
+
+            {sent && (
+              <p className="fmsg ok" role="status">
+                Thank you — your enquiry has reached our office.
+              </p>
+            )}
           </div>
         </div>
       </div>

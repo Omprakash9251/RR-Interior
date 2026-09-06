@@ -22,6 +22,28 @@ export const COMPANY = {
     'https://www.google.com/maps/search/?api=1&query=Shanti+Nagar+Sector+10+Mira+Road+East+Thane+401107',
 };
 
+// ---------------------------------------------------------------------------
+// Where the Contact and Enquiry forms deliver.
+//
+// Submissions are posted to FormSubmit (formsubmit.co), which forwards them by
+// email. No backend or API key is needed.
+//
+// ACTIVATION — required once, or nothing is delivered:
+//   The very first submission makes FormSubmit email an activation link to the
+//   address below. Open that email and click the link. Until you do, every
+//   submission is silently dropped.
+//
+// The address is visible in the published JavaScript, so scrapers can read it.
+// To avoid that: after activating, FormSubmit gives you a random alias — swap
+// the whole endpoint for it and the address disappears from the bundle:
+//   endpoint: 'https://formsubmit.co/ajax/1a2b3c4d5e6f...'
+// ---------------------------------------------------------------------------
+export const FORMS = {
+  endpoint: `https://formsubmit.co/ajax/${COMPANY.email}`,
+  contactSubject: 'RR Interior — New website enquiry',
+  enquirySubject: 'RR Interior — New site visit request',
+};
+
 export const SLIDES = [
   {
     kicker: '01 — TURNKEY PROJECTS',

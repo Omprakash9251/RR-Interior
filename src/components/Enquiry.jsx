@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { ENQUIRY_LABELS, ENQUIRY_OPTIONS } from '../data/content';
+import { COMPANY, ENQUIRY_LABELS, ENQUIRY_OPTIONS, FORMS, formatPhone } from '../data/content';
+import { useFormSubmit } from '../hooks/useFormSubmit';
 import { useReveal } from '../hooks/useReveal';
+import { WhatsApp } from './Icons';
 
 const GROUPS = [
   ['scope', 'What kind of work is it?'],
@@ -12,7 +14,10 @@ export default function Enquiry() {
   const [choice, setChoice] = useState({ scope: 0, finish: 1, when: 1 });
   const [area, setArea] = useState(2000);
   const [fields, setFields] = useState({ name: '', phone: '', location: '' });
-  const [sent, setSent] = useState(false);
+  const [invalid, setInvalid] = useState('');
+  const { status, error, send } = useFormSubmit();
+  const sent = status === 'sent';
+  const sending = status === 'sending';
 
   const [rh, ch, sh] = useReveal();
   const [rl, cl, sl] = useReveal(60);
@@ -21,19 +26,44 @@ export default function Enquiry() {
 
   const set = (k) => (e) => setFields({ ...fields, [k]: e.target.value });
 
-  const submit = () => {
-    // Wire this to your backend, an email service, or a WhatsApp deep link.
-    // The full payload is assembled below and ready to send.
-    const payload = {
-      scope: ENQUIRY_OPTIONS.scope[choice.scope],
-      finish: ENQUIRY_OPTIONS.finish[choice.finish],
-      when: ENQUIRY_OPTIONS.when[choice.when],
-      area,
-      ...fields,
-    };
-    console.log('Enquiry submitted:', payload);
-    setSent(true);
+  // The chosen configuration, shaped once for both the email and WhatsApp.
+  const summary = {
+    'Type of work': ENQUIRY_OPTIONS.scope[choice.scope],
+    'Finish level': ENQUIRY_OPTIONS.finish[choice.finish],
+    Handover: ENQUIRY_OPTIONS.when[choice.when],
+    'Carpet area': `${area.toLocaleString('en-IN')} sq ft`,
   };
+
+  const submit = () => {
+    if (!fields.name.trim()) return setInvalid('Please add your name.');
+    if (!fields.phone.trim()) return setInvalid('Please add a mobile number so we can call back.');
+    setInvalid('');
+
+    send(
+      {
+        Name: fields.name,
+        Phone: fields.phone,
+        'Site location': fields.location || '—',
+        ...summary,
+      },
+      { subject: FORMS.enquirySubject },
+    );
+  };
+
+  // Same enquiry, sent from the visitor's own WhatsApp — no activation step
+  // and no delivery to fail, so it stays available even if the email errors.
+  const waText = [
+    `Hello ${COMPANY.name}, I would like to request a site visit.`,
+    '',
+    ...Object.entries(summary).map(([k, v]) => `${k}: ${v}`),
+    fields.name.trim() && `Name: ${fields.name}`,
+    fields.phone.trim() && `Phone: ${fields.phone}`,
+    fields.location.trim() && `Site location: ${fields.location}`,
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+  const waHref = `https://wa.me/91${COMPANY.primaryPhone}?text=${encodeURIComponent(waText)}`;
 
   return (
     <section className="cfg wrap" id="enquire">
@@ -108,10 +138,26 @@ export default function Enquiry() {
                    value={fields.location} onChange={set('location')} />
           </label>
 
-          <button className="go" type="button" onClick={submit} disabled={sent}
-                  style={sent ? { opacity: 0.72 } : undefined}>
-            {sent ? 'Sent — we will call you today' : 'Request a site visit'}
+          <button className="go" type="button" onClick={submit}
+                  disabled={sending || sent}
+                  style={sent || sending ? { opacity: 0.72 } : undefined}>
+            {sending ? 'Sending…' : sent ? 'Sent — we will call you today' : 'Request a site visit'}
           </button>
+
+          <a className="go-wa" href={waHref} target="_blank" rel="noopener noreferrer">
+            <WhatsApp size={17} fill="currentColor" /> Send on WhatsApp instead
+          </a>
+
+          {invalid && <p className="fmsg bad" role="alert">{invalid}</p>}
+
+          {status === 'error' && (
+            <p className="fmsg bad" role="alert">
+              {error} Nothing was sent — use WhatsApp above, or call{' '}
+              <a href={`tel:+91${COMPANY.primaryPhone}`}>
+                {formatPhone(COMPANY.primaryPhone)}
+              </a>.
+            </p>
+          )}
           <p className="disc">
             A partner calls you back the same working day and visits the site at a time that
             suits you. No charge for the visit or the estimate.
