@@ -112,7 +112,7 @@ nav.stuck{border-color:var(--line)}
 
 /* video */
 .video{background:var(--ink);color:var(--paper)}
-.video .head{border-color:rgba(244,242,237,.3);padding-bottom:12px}
+.video .head{border-color:rgba(244,242,237,.3)}
 .video .lead{color:#B5AEA4;margin-top:14px;max-width:62ch}
 .vgrid{display:grid;grid-template-columns:1.05fr .75fr;gap:clamp(20px,3vw,40px);margin-top:var(--head-gap);align-items:center}
 .vframe{position:relative;border:1px solid rgba(244,242,237,.2);overflow:hidden;background:#000;aspect-ratio:9/16;max-height:380px;margin:0 auto;width:min(100%, 290px)}
