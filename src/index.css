@@ -44,7 +44,7 @@ nav.stuck{border-color:var(--line)}
   max-width:none; /* override global img max-width */
   display:block;
 }
-.brand-name{font-family:var(--serif);font-size:1.2rem;letter-spacing:-.03em;color:var(--ink);font-weight:600;white-space:nowrap}
+.brand img.brand-word{height:23px;align-self:center}
 .brand em{display:none}
 .nlinks{display:flex;gap:26px;align-items:center}
 .nlinks a{font-size:.83rem;font-weight:500;color:var(--stone);transition:color .25s}
@@ -53,6 +53,7 @@ nav.stuck{border-color:var(--line)}
 .callbtn:hover{background:var(--redd)}
 @keyframes fade{to{opacity:1}}
 @media(max-width:1000px){.nlinks a:not(.callbtn){display:none}.brand em{display:none}}
+@media(max-width:560px){.brand img.brand-word{height:18px}}
 
 /* hero carousel */
 .hero{padding-top:var(--nav-h)}
@@ -226,7 +227,25 @@ nav.stuck{border-color:var(--line)}
 .tc a{font-size:.86rem;color:#CFC7BC;border-bottom:1px solid rgba(244,242,237,.25);padding-bottom:1px}
 .tc a:hover{color:#fff;border-color:#fff}
 @media(max-width:1050px){.tgrid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:620px){.tgrid{grid-template-columns:repeat(2,1fr)}}
+/* Mobile: the five cards become one edge-to-edge, snapping swipe rail.
+   Cards are held under full width so the next one peeks in — that peek is
+   the only affordance saying "there is more", so keep it. */
+@media(max-width:620px){
+  .tgrid{
+    grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:78%;
+    overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;
+    /* break out of .wrap's gutter, then restore it as padding so the first and
+       last card still line up with the heading above */
+    margin-inline:calc(var(--pad) * -1);padding-inline:var(--pad);scroll-padding-inline:var(--pad);
+    scrollbar-width:none;
+  }
+  .tgrid::-webkit-scrollbar{display:none}
+  .tc{scroll-snap-align:start}
+  /* The last card's start-aligned snap point lies past the maximum scroll
+     offset, which mandatory snapping cannot reach — snap it by its end edge,
+     which lands exactly on that maximum. */
+  .tc:last-child{scroll-snap-align:end}
+}
 
 /* enquiry configurator */
 .cfg .head{border-color:var(--ink)}
@@ -299,8 +318,13 @@ footer.site{background:var(--ink);color:#A79E93;padding:var(--section-y) var(--p
 .fgrid{max-width:1460px;margin:0 auto;display:grid;grid-template-columns:1.5fr 1fr 1fr 1.35fr;gap:clamp(26px,4vw,60px);padding-bottom:clamp(36px,5vw,58px)}
 .footer-brand{display:flex;align-items:center;gap:12px;margin-bottom:18px}
 .fgrid img.flogo{height:52px;width:auto;display:block}
-.footer-brand-name{font-family:var(--serif);font-size:1.35rem;letter-spacing:-.03em;color:var(--paper);font-weight:600;line-height:1}
+.fgrid img.fword{height:25px;width:auto}
 .fgrid p{font-size:.92rem;max-width:34ch;line-height:1.7}
+.fsocial{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.fsocial a{display:inline-flex;align-items:center;gap:8px;padding:8px 15px;border:1px solid rgba(244,242,237,.18);border-radius:999px;
+  font-size:.84rem;transition:color .3s var(--ease),border-color .3s var(--ease),background .3s var(--ease)}
+.fsocial a:hover{color:var(--paper);border-color:rgba(244,242,237,.45);background:rgba(244,242,237,.06)}
+.fsocial svg{flex:none}
 .fh{font-family:var(--serif);font-size:1rem;color:var(--paper);font-weight:500;margin-bottom:16px}
 .fl2{display:flex;flex-direction:column;gap:10px;font-size:.92rem}
 .fl2 a:hover{color:var(--paper)}

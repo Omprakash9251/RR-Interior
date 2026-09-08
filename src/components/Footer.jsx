@@ -1,6 +1,7 @@
 import {
-  COMPANY, FOOTER_COMPANY, FOOTER_SERVICES, TEAM, formatPhone,
+  COMPANY, FOOTER_COMPANY, FOOTER_SERVICES, SOCIAL, TEAM, formatPhone,
 } from '../data/content';
+import { Instagram, WhatsApp } from './Icons';
 
 export default function Footer() {
   return (
@@ -8,13 +9,23 @@ export default function Footer() {
       <div className="fgrid">
         <div>
           <div className="footer-brand">
-            <img className="flogo" src="/img/logo-mark.png" alt={COMPANY.name} />
-            <span className="footer-brand-name">R. R. Interior</span>
+            <img className="flogo" src="/img/logo-mark.png" alt="" />
+            <img className="fword" src="/img/logo-wordmark.png" alt={COMPANY.name} />
           </div>
           <p>
             Furniture contractors and interior decorators, working across Mumbai and Thane on
             turnkey residential and commercial interiors. Run by {TEAM[0].name} and his four sons.
           </p>
+          <div className="fsocial">
+            <a href={SOCIAL.instagram} target="_blank" rel="noopener noreferrer"
+               aria-label="R. R. Interior on Instagram">
+              <Instagram size={17} /> Instagram
+            </a>
+            <a href={SOCIAL.whatsapp} target="_blank" rel="noopener noreferrer"
+               aria-label="Message R. R. Interior on WhatsApp">
+              <WhatsApp size={17} fill="currentColor" /> WhatsApp
+            </a>
+          </div>
         </div>
 
         <div>
