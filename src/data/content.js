@@ -23,6 +23,15 @@ export const COMPANY = {
 };
 
 // ---------------------------------------------------------------------------
+// Social profiles — used by the footer. Keep the Instagram URL clean (no
+// ?utm_source=qr tracking tail); WhatsApp always follows the primary number.
+// ---------------------------------------------------------------------------
+export const SOCIAL = {
+  instagram: 'https://www.instagram.com/rrinterior07',
+  whatsapp: `https://wa.me/91${COMPANY.primaryPhone}`,
+};
+
+// ---------------------------------------------------------------------------
 // Where the Contact and Enquiry forms deliver.
 //
 // Submissions are posted to FormSubmit (formsubmit.co), which forwards them by

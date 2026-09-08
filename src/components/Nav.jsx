@@ -22,8 +22,8 @@ export default function Nav() {
   return (
     <nav className={stuck ? 'stuck' : ''}>
       <a className="brand" href="/" aria-label={COMPANY.name}>
-        <img src="/img/logo-mark.png" alt={COMPANY.name} />
-        <span className="brand-name">R. R. Interior</span>
+        <img src="/img/logo-mark.png" alt="" />
+        <img className="brand-word" src="/img/logo-wordmark.png" alt="" />
       </a>
       <div className="nlinks">
         {LINKS.map(([label, href]) => (
